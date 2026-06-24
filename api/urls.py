@@ -1,14 +1,22 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import SimpleRouter
 
-from .views import (CarApiView, CarDetailApiView, CarBrandApiView, CarBrandDetailApiView, CommentApiView,
-                    CommentDetailApiView)
+from .views import (CarBrandViewSet, CarViewSet, CommentViewSet)
+
+router = SimpleRouter()
+router.register('cars', CarViewSet)
+router.register("brands",CarBrandViewSet)
+router.register("comments", CommentViewSet)
+
+
 
 urlpatterns = [
-    path('brands/', CarBrandApiView.as_view()),
-    path('brands/<int:pk>/', CarBrandDetailApiView.as_view()),
-    path('cars/', CarApiView.as_view()),
-    path('cars/<int:pk>/', CarDetailApiView.as_view()),
-    path('cars/brand/<int:brand_id>/', CarApiView.as_view()),
-    path('cars/<int:pk>/comments/', CommentApiView.as_view()),
-    path('cars/<int:pk>/comments/<int:pk>/', CommentDetailApiView.as_view()),
+    path("", include(router.urls)),
+    # path('brands/', CarBrandApiView.as_view()),
+    # path('brands/<int:pk>/', CarBrandDetailApiView.as_view()),
+    # path('cars/', CarApiView.as_view()),
+    # path('cars/<int:pk>/', CarDetailApiView.as_view()),
+    path('cars/brand/<int:brand_id>/', CarViewSet.as_view({"get": "list"})),
+    # path('cars/<int:pk>/comments/', CommentApiView.as_view()),
+    # path('cars/<int:pk>/comments/<int:pk>/', CommentDetailApiView.as_view()),
 ]
