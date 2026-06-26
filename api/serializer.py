@@ -3,15 +3,23 @@ from rest_framework import serializers
 from .models import CarBrand, Car, Comment
 
 class CarBrandSerializer(serializers.ModelSerializer):
+
+    cars = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = CarBrand
         fields = '__all__'
 
+class CategorySerializerForBrand(serializers.ModelSerializer):
+    class Meta:
+        model = CarBrand
+        fields = "__all__"
 
 class CarSerializer(serializers.ModelSerializer):
 
+    url = serializers.HyperlinkedIdentityField(view_name="car-detail")
     my_brand = serializers.ChoiceField(source=CarBrand.objects.all())
-
+    # brand = CategorySerializerForBrand(read_only=True, source='brand')
     class Meta:
         model = Car
         fields = "__all__"
