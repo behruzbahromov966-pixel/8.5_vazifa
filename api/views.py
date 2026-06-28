@@ -5,15 +5,21 @@ from rest_framework.viewsets import ModelViewSet
 
 from .permissions import MyAuthenticatedOrReadOnly, MyAdminOnly
 from .models import Car, CarBrand, Comment
-from .serializer import CarSerializer ,CarBrandSerializer, CommentSerializer
+from .serializer import CarSerializer ,CarBrandSerializer, CommentSerializer, CarBrandSerializerForDetail
 # Create your views here.
 
 class CarBrandViewSet(ModelViewSet):
-    queryset = CarBrand.objects.all()
+    # queryset = CarBrand.objects.all().prefetch_related('cars').only('id', 'name')
+    queryset = CarBrand.objects.all().prefetch_related('cars').defer('country')
     serializer_class = CarBrandSerializer
 
+    def get_serializer_class(self):
+        if self.kwargs.get('pk'):
+            return CarBrandSerializerForDetail
+        return self.serializer_class
+
 class CarViewSet(ModelViewSet):
-    queryset = Car.objects.all()
+    queryset = Car.objects.all().select_related('brand')
     serializer_class = CarSerializer
 
     def get_queryset(self):
